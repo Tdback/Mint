@@ -1,0 +1,6 @@
+#+TITLE:Tdback-Mint
+
+My current Linux Mint customization on my main desktop.
+
+I use tools such as Alacritty, bspwm, sxhkd, polybar, rofi, and starship.
+Feel free to copy any of my configs, but I strongly encourage you to further customize it for yourself!
