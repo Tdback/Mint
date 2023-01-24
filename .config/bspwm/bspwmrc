@@ -46,6 +46,7 @@ bspc config presel_feedback_color "$color2"
 
 # Application rules
 bspc rule -a Steam desktop="^4"
+bspc rule -a Emacs state=tiled
 
 # Auto start programs
 sleep 0.50
