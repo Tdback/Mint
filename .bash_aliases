@@ -2,8 +2,9 @@
 
 # Terminal
 alias cp='cp -iv'
-alias rm='rm -v'
+alias rm='rm -Idv'
 
+alias ls='ls -Gp'
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
