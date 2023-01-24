@@ -88,13 +88,13 @@
 (setq make-pointer-invisible t) ;; Edit this
 
 ;; Set font
-(set-face-attribute 'default nil :font "RedHat Mono" :height 130)
+(set-face-attribute 'default nil :font "RedHat Mono" :height 140)
 
 ;; Set fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "RedHat Mono" :height 130)
+(set-face-attribute 'fixed-pitch nil :font "RedHat Mono" :height 140)
 
 ;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "RedHat Mono" :height 130)
+(set-face-attribute 'variable-pitch nil :font "RedHat Mono" :height 140)
 
 ;; Make ESC quit prompts
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
@@ -141,7 +141,7 @@
   (evil-collection-init))
 
 (use-package doom-themes
-  :init (load-theme 'doom-homage-black t))
+  :init (load-theme 'doom-molokai t))
 
 (use-package doom-modeline
   :ensure t
@@ -387,7 +387,7 @@
 ;; Automatically tangle out Emacs.org config file when we save it
 (defun td/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/.emacs.d/Emacs.org"))
+                      (expand-file-name "~/.dotfiles/.emacs.d/Emacs.org"))
     ;; Dynamic scoping to the rescue
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
@@ -449,34 +449,26 @@
                                                    '(:immediate-finish t)))))
     (apply #'org-roam-node-insert args)))
 
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook ((c-mode       . lsp-deferred)
-         (c++-mode     . lsp-deferred)
-         (rust-mode    . lsp-deferred))
-  :init
-  (setq lsp-keymap-prefix "C-c l")
+(use-package eglot
+  :ensure t :defer t 
   :config
-  (setq lsp-headerline-breadcrumb-enable nil)
-  (setq lsp-completion-provider :none) ; Disables warning for company-mode
-  (setq lsp-rust-analyzer-server-display-inlay-hints t)
-  (setq lsp-rust-analyzer-display-reborrow-hints "always")
-  (lsp-enable-which-key-integration t))
-
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-doc-position 'bottom))
-
-(use-package lsp-treemacs
-  :after lsp)
-
-(use-package lsp-ivy
-  :after lsp)
+  (add-to-list 'eglot-server-programs '(c-mode      . ("clangd")))
+  (add-to-list 'eglot-server-programs '(c++-mode    . ("clangd")))
+  (add-to-list 'eglot-server-programs '(rust-mode   . ("rust-analyzer")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyls")))
+  (add-to-list 'eglot-server-programs '(go-mode     . ("gopls")))
+  :hook
+  ((python-mode   . eglot-ensure)
+   (rust-mode     . eglot-ensure)
+   (go-mode       . eglot-ensure)
+   (c-mode        . eglot-ensure)
+   (c++-mode      . eglot-ensure)))
 
 (use-package orderless
   :commands (orderless)
-  :custom (completion-styles '(orderless flex)))
+  :custom
+  (completion-styles '(orderless flex))
+  (completion-category-override '((eglot (styles . (orderless-flex))))))
 
 (use-package corfu
   :custom
@@ -522,17 +514,14 @@
   :config
   (setq inferior-lisp-program "/usr/local/bin/sbcl"))
 
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp-deferred))))
+(use-package python-mode
+  :ensure t :defer t :mode "\\.py\\'")
 
 (use-package rust-mode
-  :ensure t :mode "\\.rs\\'"
-  :init
-  ;; scratchpad for Rust
-  (setq lsp-rust-clippy-preference "on"))
+  :ensure t :defer t :mode "\\.rs\\'")
+
+(use-package go-mode
+  :ensure t :defer t :mode "\\.go\\'")
 
 (use-package evil-nerd-commenter
   :bind ("M-/" . evilnc-comment-or-uncomment-lines))

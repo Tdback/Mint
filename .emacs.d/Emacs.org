@@ -130,13 +130,13 @@
 #+begin_src emacs-lisp
 
 ;; Set font
-(set-face-attribute 'default nil :font "RedHat Mono" :height 130)
+(set-face-attribute 'default nil :font "RedHat Mono" :height 140)
 
 ;; Set fixed pitch face
-(set-face-attribute 'fixed-pitch nil :font "RedHat Mono" :height 130)
+(set-face-attribute 'fixed-pitch nil :font "RedHat Mono" :height 140)
 
 ;; Set the variable pitch face
-(set-face-attribute 'variable-pitch nil :font "RedHat Mono" :height 130)
+(set-face-attribute 'variable-pitch nil :font "RedHat Mono" :height 140)
 
 #+end_src
 
@@ -194,12 +194,12 @@
 
 ** Color Theme
 
-- Themes I like: doom-ayu-dark, nord, homage-black, vibrant, horizon, Iosvken 
+- Themes I like: doom-ayu-dark, nord, homage-black, vibrant, horizon, Iosvkem
 
 #+begin_src emacs-lisp
 
 (use-package doom-themes
-  :init (load-theme 'doom-homage-black t))
+  :init (load-theme 'doom-molokai t))
 
 #+end_src
 
@@ -525,7 +525,7 @@
 ;; Automatically tangle out Emacs.org config file when we save it
 (defun td/org-babel-tangle-config ()
   (when (string-equal (buffer-file-name)
-                      (expand-file-name "~/.emacs.d/Emacs.org"))
+                      (expand-file-name "~/.dotfiles/.emacs.d/Emacs.org"))
     ;; Dynamic scoping to the rescue
     (let ((org-confirm-babel-evaluate nil))
       (org-babel-tangle))))
@@ -610,61 +610,24 @@
 
 ** Language
 
-*** lsp-mode
+*** Eglot
 
 #+begin_src emacs-lisp
 
-(use-package lsp-mode
-  :commands (lsp lsp-deferred)
-  :hook ((c-mode       . lsp-deferred)
-         (c++-mode     . lsp-deferred)
-         (rust-mode    . lsp-deferred))
-  :init
-  (setq lsp-keymap-prefix "C-c l")
+(use-package eglot
+  :ensure t :defer t 
   :config
-  (setq lsp-headerline-breadcrumb-enable nil)
-  (setq lsp-completion-provider :none) ; Disables warning for company-mode
-  (setq lsp-rust-analyzer-server-display-inlay-hints t)
-  (setq lsp-rust-analyzer-display-reborrow-hints "always")
-  (lsp-enable-which-key-integration t))
-
-#+end_src
-
-*** lsp-ui
-
-#+begin_src emacs-lisp
-
-(use-package lsp-ui
-  :hook (lsp-mode . lsp-ui-mode)
-  :custom
-  (lsp-ui-doc-position 'bottom))
-
-#+end_src
-
-*** lsp-treemacs
-
-- Use with =M-x=
-- =lsp-treemacs-symbols=- show a tree view of symbols in the current file
-- =lsp-treemacs-references=- show a tree view for the references of the symbol under the cursor
-- =lsp-treemacs-error-list=- show a tree view for the diagnostic messages in the project
-
-#+begin_src emacs-lisp
-
-(use-package lsp-treemacs
-  :after lsp)
-
-#+end_src
-
-*** lsp-ivy
-
-- Use with =M-x=
-- =lsp-ivy-workspace-symbol=- search for a symbol name in the current project workspace
-- =lsp-ivy-global-workspace-symbol=- search for a symbol name in all active project workspaces
-
-#+begin_src emacs-lisp
-
-(use-package lsp-ivy
-  :after lsp)
+  (add-to-list 'eglot-server-programs '(c-mode      . ("clangd")))
+  (add-to-list 'eglot-server-programs '(c++-mode    . ("clangd")))
+  (add-to-list 'eglot-server-programs '(rust-mode   . ("rust-analyzer")))
+  (add-to-list 'eglot-server-programs '(python-mode . ("pyls")))
+  (add-to-list 'eglot-server-programs '(go-mode     . ("gopls")))
+  :hook
+  ((python-mode   . eglot-ensure)
+   (rust-mode     . eglot-ensure)
+   (go-mode       . eglot-ensure)
+   (c-mode        . eglot-ensure)
+   (c++-mode      . eglot-ensure)))
 
 #+end_src
 
@@ -676,7 +639,9 @@
 
 (use-package orderless
   :commands (orderless)
-  :custom (completion-styles '(orderless flex)))
+  :custom
+  (completion-styles '(orderless flex))
+  (completion-category-override '((eglot (styles . (orderless-flex))))))
 
 #+end_src
 
@@ -749,11 +714,8 @@
 
 #+begin_src emacs-lisp
 
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp-deferred))))
+(use-package python-mode
+  :ensure t :defer t :mode "\\.py\\'")
 
 #+end_src
 
@@ -762,11 +724,17 @@
 #+begin_src emacs-lisp
 
 (use-package rust-mode
-  :ensure t :mode "\\.rs\\'"
-  :init
-  ;; scratchpad for Rust
-  (setq lsp-rust-clippy-preference "on"))
+  :ensure t :defer t :mode "\\.rs\\'")
   
+#+end_src
+
+** Go
+
+#+begin_src emacs-lisp
+
+(use-package go-mode
+  :ensure t :defer t :mode "\\.go\\'")
+
 #+end_src
 
 ** Commenting Lines
