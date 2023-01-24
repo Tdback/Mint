@@ -1,4 +1,3 @@
-export PATH="$HOME/.local/bin:$PATH"
 export LESSHISTFILE="-"
 
 # If not running interactively, don't do anything
@@ -63,6 +62,9 @@ if ! shopt -oq posix; then
   fi
 fi
 . "$HOME/.cargo/env"
+
+# Set GOPATH for projects
+# export GOPATH=$HOME/Project/Go
 
 # Set evil-binds and fix C-l behavior
 set -o vi
