@@ -4,7 +4,6 @@
 alias cp='cp -iv'
 alias rm='rm -Idv'
 
-alias ls='ls -Gp'
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
@@ -14,7 +13,7 @@ alias ~='cd'
 
 # Python
 alias py='/usr/bin/python3'
-alias python='/usr/bin/python2'
+alias python='/usr/bin/python3'
 
 # VIM
 alias v='/usr/bin/nvim'
